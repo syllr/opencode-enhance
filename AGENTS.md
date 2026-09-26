@@ -1,3 +1,25 @@
+# opencode-enhance
+
+## 项目定位
+
+`opencode-enhance` 本质上是**把 oh-my-openagent（omo）的特性搬到本项目里，再以 OpenCode 插件的形式提供给 opencode 使用**。
+
+改动前先想清楚：这是「移植 omo 能力」还是「改 opencode 本身的行为」。前者在本仓库内完成，后者要去 opencode 源码仓库。
+
+## 参考源码仓库
+
+| 仓库                                   | 作用                                                                              |
+| -------------------------------------- | --------------------------------------------------------------------------------- |
+| `/Users/yutao/Projects/oh-my-openagent` | omo 源码。特性、规则（rule）、skill、agent 的**设计参考与移植来源**                |
+| `/Users/yutao/WebstormProjects/opencode` | opencode 源码。插件的**宿主运行时**：插件 API、工具、hook、TUI 行为以它为准         |
+
+使用要点：
+
+- 移植 omo 特性时，先到 `oh-my-openagent` 找到对应实现与规则，再在本仓库落地。
+- 不确定某个 hook / 插件接口 / 工具签名怎么用，去 `opencode` 源码查真实实现与类型定义，不要猜。
+- 本项目通过 `agents/`、`skills/`、`commands/`、`rules/` 四个目录以**包内容**的形式向 opencode 注入能力，加载逻辑在 `src/`。
+- 这两个仓库都在本项目目录之外，用普通文件工具读写即可；只对本项目内的路径强制走 IDEA MCP 工具。
+
 # Agent Release Rules
 
 ## npm 版本发布规则

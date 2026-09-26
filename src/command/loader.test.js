@@ -1,3 +1,5 @@
+import { readdirSync } from 'node:fs';
+
 import { describe, expect, it } from 'vitest';
 
 import { readCommand, readCommands } from './loader.js';
@@ -18,11 +20,11 @@ describe('readCommand', () => {
 describe('readCommands', () => {
   it('lists every shipped command, sorted, each with a description and a body', () => {
     const commands = readCommands();
-    expect(commands.map((command) => command.name)).toEqual([
-      'readonly',
-      'readonly-off',
-      'refresh-file',
-    ]);
+    const shipped = readdirSync(new URL('../../commands/', import.meta.url), { withFileTypes: true })
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
+      .map((entry) => entry.name.replace(/\.md$/, ''))
+      .sort();
+    expect(commands.map((command) => command.name)).toEqual(shipped);
     for (const command of commands) {
       expect(command.description).not.toBe('');
       expect(command.text).not.toBe('');

@@ -1,0 +1,8 @@
+{
+  "description": "外部库与开源项目调研。用于去远程仓库里找代码、解释某个外部库内部是怎么实现的、找真实使用范例、或者追溯上游项目为什么那么改。回答一律附 GitHub 永久链接作为出处。适合：遇到不熟悉的 npm/pip/cargo 包、第三方库行为诡异、想知道业界最佳实践。不适合：读本地代码（用 explore 或直接读文件）。",
+  "mode": "subagent",
+  "permissions": [
+    { "action": "edit", "resource": "*", "effect": "deny" },
+    { "action": "subagent", "resource": "*", "effect": "deny" }
+  ]
+}

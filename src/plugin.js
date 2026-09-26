@@ -2,10 +2,11 @@
 //
 // It ships this package's own content and registers it with OpenCode:
 //
-//   commands/<name>.md    a slash command; the body is the prompt it sends
-//   skills/<id>/SKILL.md  a skill
-//   rules/<id>.md         a rule appended to every agent-loop system prompt
-//   agents/<id>.json      field overrides for an agent that already exists
+//   commands/<name>.md           a slash command; the body is the prompt it sends
+//   skills/<id>/SKILL.md         a skill
+//   rules/<id>.md                a rule appended to every agent-loop system prompt
+//   agents/<id>.json             field overrides for an agent that already exists
+//   agents/<id>/agent.json       a new agent, with <id>/prompt.md as its prompt
 //
 // Adding content is therefore a file, not a code change.
 //
@@ -18,7 +19,7 @@
 // background work. Rules reach the model through a `context` hook, which runs
 // per model request and only edits that request.
 
-import { readAgentPatches } from './agent/loader.js';
+import { readAgents } from './agent/loader.js';
 import { readCommands } from './command/loader.js';
 import { readRules } from './rule/loader.js';
 import { readSkills } from './skill/loader.js';
@@ -98,14 +99,21 @@ export default {
       );
     }
 
-    const patches = readAgentPatches();
-    if (patches.length > 0 && typeof ctx.agent?.transform === 'function') {
+    const agents = readAgents();
+    if (agents.length > 0 && typeof ctx.agent?.transform === 'function') {
       registrations.push(
         await ctx.agent.transform((editor) => {
-          for (const patch of patches) {
-            if (!editor.get(patch.id)) continue;
-            editor.update(patch.id, (agent) => {
-              Object.assign(agent, patch.fields);
+          for (const entry of agents) {
+            // A patch targets an agent OpenCode already has; a definition is
+            // the source of the agent, and `update` creates it when unknown.
+            if (entry.form === 'patch' && !editor.get(entry.id)) continue;
+            editor.update(entry.id, (agent) => {
+              const { permissions, ...rest } = entry.fields;
+              Object.assign(agent, rest);
+              // Appended, not assigned: `Info.default` opens every agent with
+              // `* allow` and `Permission.evaluate` resolves with `findLast`, so
+              // a rule only wins when it lands after the defaults.
+              if (Array.isArray(permissions)) agent.permissions.push(...permissions);
             });
           }
         }),

@@ -1,0 +1,8 @@
+{
+  "description": "只读的高推理顾问。用于多系统取舍、大范围重构设计、反复修不好的 bug、或者自己动手实现完一遍之后的自查。适合：架构决策、难定位的问题、需要跨多个系统权衡的改动。不适合：简单文件操作、你已经读过代码就能回答的问题、命名和格式化这类琐碎决定。",
+  "mode": "subagent",
+  "permissions": [
+    { "action": "edit", "resource": "*", "effect": "deny" },
+    { "action": "subagent", "resource": "*", "effect": "deny" }
+  ]
+}
